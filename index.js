@@ -48,10 +48,25 @@ export default class ReactNativeARKit extends Component {
 
   fireLaser() {
     ARKit.getCameraPosition().then(pos => {
-      let laser = <Laser startPosition={pos} key={pos.x + ',' + pos.y} />;
+      let laser = (
+        <Laser
+          startPosition={pos}
+          key={pos.x + ',' + pos.y}
+          id={pos.x + ',' + pos.y}
+          unmount={this.destroyLaser.bind(this)}
+        />
+      );
       this.setState({
         lasers: [...this.state.lasers, laser],
       });
+    });
+  }
+
+  destroyLaser(laserId) {
+    this.setState({
+      lasers: this.state.lasers.filter(function(laser) {
+        return laserId !== laser.props.id;
+      }),
     });
   }
 

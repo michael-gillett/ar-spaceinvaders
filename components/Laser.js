@@ -33,6 +33,10 @@ class Laser extends Component {
         z: this.state.position.z - SPEED,
       },
     });
+
+    if (this.state.position.z < -5) {
+      this.props.unmount(this.props.id);
+    }
   }
 
   render() {
