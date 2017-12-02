@@ -19,10 +19,8 @@ class UI extends Component {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={this.props.fireLaser}
-          style={styles.resetButton}
-        >
-          <Text> Fire </Text>
-        </TouchableOpacity>
+          style={styles.fireLaser}
+        />
       </View>
     );
   }
@@ -33,18 +31,18 @@ export default UI;
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+    width: '100%',
+    height: '100%',
     top: 0,
-    bottom: 0,
-    right: 0,
     left: 0,
   },
   fireLaser: {
     position: 'absolute',
     bottom: 50,
     right: 50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     backgroundColor: 'green',
   },
   resetButton: {
@@ -53,5 +51,6 @@ const styles = StyleSheet.create({
     left: 50,
     width: 100,
     height: 100,
+    backgroundColor: 'white',
   },
 });

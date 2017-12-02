@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AppRegistry, View } from 'react-native';
+import { AppRegistry, View, StyleSheet } from 'react-native';
 import { ARKit } from 'react-native-arkit';
 import PongBall from './components/PongBall';
 import Brick from './components/Brick';
@@ -48,10 +48,9 @@ export default class ReactNativeARKit extends Component {
 
   fireLaser() {
     ARKit.getCameraPosition().then(pos => {
-      let tmpLasers = this.state.lasers;
-      tmpLasers.push(<Laser startPosition={pos} />);
+      let laser = <Laser startPosition={pos} key={pos.x + ',' + pos.y} />;
       this.setState({
-        lasers: tmpLasers,
+        lasers: [...this.state.lasers, laser],
       });
     });
   }
@@ -112,10 +111,20 @@ export default class ReactNativeARKit extends Component {
             color="white"
           />
         </ARKit>
-        <UI fireLaser={this.fireLaser.bind(this)} />
+        <UI fireLaser={this.fireLaser.bind(this)} style={styles.container} />
       </View>
     );
   }
 }
 
 AppRegistry.registerComponent('ar-pong', () => ReactNativeARKit);
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: 0,
+    left: 0,
+  },
+});
