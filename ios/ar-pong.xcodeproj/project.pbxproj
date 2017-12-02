@@ -20,6 +20,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		2C67EEC51FD33AF100E8D900 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C3CDC2E1FD338F1000EB1F5 /* art.scnassets */; };
 		2C8279D11FD27E0600792C4A /* PocketSVG.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C935A4D1FD20656003FE97C /* PocketSVG.framework */; };
 		2C8279D21FD27E0600792C4A /* PocketSVG.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2C935A4D1FD20656003FE97C /* PocketSVG.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2C935A571FD2096A003FE97C /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
@@ -337,6 +338,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "ar-pong/Info.plist"; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "ar-pong/main.m"; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		2C3CDC2E1FD338F1000EB1F5 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; name = art.scnassets; path = "ar-pong/art.scnassets"; sourceTree = "<group>"; };
 		2C935A471FD20656003FE97C /* PocketSVG.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PocketSVG.xcodeproj; path = ../node_modules/_PocketSVG/PocketSVG.xcodeproj; sourceTree = "<group>"; };
 		5278599D5B7B4E5E9D5AD406 /* libRCTARKit.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTARKit.a; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
@@ -453,6 +455,7 @@
 		13B07FAE1A68108700A75B9A /* ar-pong */ = {
 			isa = PBXGroup;
 			children = (
+				2C3CDC2E1FD338F1000EB1F5 /* art.scnassets */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -984,6 +987,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C67EEC51FD33AF100E8D900 /* art.scnassets in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);

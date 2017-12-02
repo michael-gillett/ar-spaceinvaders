@@ -12,12 +12,11 @@ export default function objectsReducer(state = initialState, action) {
         ...state,
         lasers: [...state.lasers, action.payload],
       };
-    // case MOVE_ALIENS:
-    //   return {
-    //     ...state,
-    //     loading: true,
-    //     search_query: action.payload,
-    //   };
+    case UPDATE_ALIENS:
+      return {
+        ...state,
+        aliens: action.payload,
+      };
     case UPDATE_LASERS:
       return {
         ...state,

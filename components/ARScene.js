@@ -43,25 +43,22 @@ class ARScene extends Component {
     this.setState({
       plane: plane,
     });
+    if (this.props.aliens.length === 0) {
+      this.props.initAliens(plane.node, plane.extent);
+    }
   }
 
   render() {
-    let bricks = [];
-    if (this.state.plane) {
-      for (x = 0; x < 10; x++) {
-        for (y = 0; y < 10; y++) {
-          bricks.push(
-            <Brick
-              planeCenter={this.state.plane.node}
-              planeSize={this.state.plane.extent}
-              xIdx={x}
-              yIdx={y}
-              key={x + ',' + y}
-            />,
-          );
-        }
-      }
-    }
+    let aliens = [];
+    this.props.aliens.forEach(alien => {
+      aliens.push(
+        <Brick
+          position={alien.position}
+          shape={alien.shape}
+          key={alien.x + ',' + alien.y}
+        />,
+      );
+    });
 
     let lasers = [];
     this.props.lasers.forEach(laser => {
@@ -103,7 +100,7 @@ class ARScene extends Component {
             />
           )}
           {plane}
-          {bricks}
+          {aliens}
           {lasers}
           <ARKit.Light
             position={{ x: 1, y: 3, z: 2 }}
@@ -119,12 +116,13 @@ class ARScene extends Component {
 
 const selectors = (state, ownProps) => ({
   lasers: state.objects.lasers,
+  aliens: state.objects.aliens,
 });
 
 const actions = dispatch => ({
   fireLaser: () => dispatch(addLaser()),
   moveLasers: () => dispatch(moveLasers()),
-  initAliens: () => dispatch(initAliens()),
+  initAliens: (center, extent) => dispatch(initAliens(center, extent)),
   checkCollisions: () => dispatch(checkCollisions()),
 });
 
