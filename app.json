@@ -1,0 +1,7 @@
+{
+  "name": "ar_pong",
+  "displayName": "AR Pong",
+  "expo": {
+    "sdkVersion": "23.0.0"
+  }
+}
