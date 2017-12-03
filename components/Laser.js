@@ -14,12 +14,16 @@ class Laser extends Component {
 
   render() {
     let laser = (
-      <ARKit.Box
+      <ARKit.Sphere
         position={this.props.position}
-        shape={{ width: WIDTH, height: HEIGHT, length: LENGTH, chamfer: 0.005 }}
+        shape={{
+          radius: 0.008,
+        }}
+        alpha={0.5}
         material={{
-          blendMode: ARKit.BlendMode.Screen,
-          color: 'red',
+          doubleSided: false,
+          color: 'green',
+          alpha: 0.5,
         }}
       />
     );

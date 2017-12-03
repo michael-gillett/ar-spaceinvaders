@@ -9,7 +9,6 @@ const initialState = {
   aliens: [],
   lasers: [],
   cursorPos: null,
-  plane: null,
 };
 export default function objectsReducer(state = initialState, action) {
   switch (action.type) {

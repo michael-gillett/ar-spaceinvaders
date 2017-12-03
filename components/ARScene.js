@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, StyleSheet } from 'react-native';
 import { ARKit, withProjectedPosition } from 'react-native-arkit';
-import PongBall from './PongBall';
-import Brick from './Brick';
+import Alien from './Alien';
 import CrossHair from './CrossHair';
 import UI from './UI';
 import Laser from './Laser';
@@ -41,15 +40,15 @@ const Cursor3D = withProjectedPosition()(
 class ARScene extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      planes: null,
-    };
   }
 
   componentDidMount() {
     intervalId = setInterval(this.globalStep.bind(this), 15);
     this.setState({
       intervalId: intervalId,
+    });
+    ARKit.getCameraPosition().then(pos => {
+      this.props.initAliens(pos);
     });
   }
 
@@ -62,20 +61,13 @@ class ARScene extends Component {
     this.props.checkCollisions();
   }
 
-  planeDetection(plane) {
-    this.setState({
-      plane: plane,
-    });
-    if (this.props.aliens.length === 0) {
-      this.props.initAliens(plane.node, plane.extent);
-    }
-  }
 
   render() {
     let aliens = [];
     this.props.aliens.forEach(alien => {
       aliens.push(
         <Brick
+        <Alien
           position={alien.position}
           shape={alien.shape}
           key={alien.x + ',' + alien.y}
@@ -94,29 +86,18 @@ class ARScene extends Component {
       );
     });
 
-    let plane = this.state.plane && (
-      <ARKit.Plane
-        position={this.state.plane.node}
-        shape={{
-          width: this.state.plane.extent.x,
-          height: this.state.plane.extent.z,
-        }}
-        eulerAngles={{ x: -Math.PI / 2, y: 0, z: 0 }}
-      />
-    );
 
     return (
       <View style={{ flex: 1 }}>
         <ARKit
           style={{ flex: 1 }}
           debug
-          planeDetection
+          // planeDetection
           lightEstimationEnabled
           worldAlignment={ARKit.ARWorldAlignment.Gravity}
-          onPlaneDetected={this.planeDetection.bind(this)}
-          onPlaneUpdate={this.planeDetection.bind(this)}
+          // onPlaneDetected={this.planeDetection.bind(this)}
+          // onPlaneUpdate={this.planeDetection.bind(this)}
         >
-          {/* <PongBall position={this.state.ballPosition} /> */}
           <Cursor3D
             projectPosition={{
               x: Dimensions.get('window').width / 2,
@@ -127,7 +108,6 @@ class ARScene extends Component {
               this.props.updateCursorPos(result.point);
             }}
           />
-          {plane}
           {aliens}
           {lasers}
           <ARKit.Light

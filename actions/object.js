@@ -5,21 +5,20 @@ export const UPDATE_CURSOR = 'UPDATE_CURSOR';
 
 import { ARKit } from 'react-native-arkit';
 
-const ALIEN_WIDTH = 0.15;
-const ALIEN_HEIGHT = 0.1;
-const ALIEN_LENGTH = 0.1;
+const BOARD_DEPTH = 3;
+const ALIEN_SIZE = 0.2;
 
-export function initAliens(planeCenter, planeExtents) {
+export function initAliens(cameraPos) {
   return function(dispatch, getState) {
     let aliens = [];
-    for (x = 0; x < 10; x++) {
-      for (y = 0; y < 10; y++) {
+    for (x = 0; x < 5; x++) {
+      for (y = 0; y < 4; y++) {
         aliens.push({
-          position: computeAlienPosition(planeCenter, planeExtents, x, y),
+          position: computeAlienPosition(cameraPos, x, y),
           shape: {
-            width: ALIEN_WIDTH,
-            height: ALIEN_HEIGHT,
-            length: ALIEN_LENGTH,
+            width: ALIEN_SIZE,
+            height: ALIEN_SIZE,
+            length: ALIEN_SIZE,
             chamfer: 0.005,
           },
           x: x,
@@ -31,12 +30,11 @@ export function initAliens(planeCenter, planeExtents) {
   };
 }
 
-computeAlienPosition = (planeCenter, planeExtents, x, y) => {
-  let backLeftCorner = planeCenter.x - planeExtents.x / 2 + ALIEN_WIDTH / 2;
+computeAlienPosition = (cameraPos, x, y) => {
   return {
-    x: backLeftCorner + x * ALIEN_WIDTH,
-    y: planeCenter.y + ALIEN_HEIGHT / 2 + y * ALIEN_HEIGHT,
-    z: planeCenter.z - planeExtents.z / 2 + ALIEN_LENGTH / 2 - 1,
+    x: cameraPos.x + (x - 2) * ALIEN_SIZE * 2,
+    y: cameraPos.y + (y - 1) * ALIEN_SIZE * 2,
+    z: cameraPos.z - BOARD_DEPTH,
   };
 };
 
@@ -48,15 +46,15 @@ export function moveAliens(requestedByUser) {
   return function(dispatch, getState) {};
 }
 
-export function moveLasers(requestedByUser) {
+export function moveLasers() {
   return function(dispatch, getState) {
     newLasers = getState().objects.lasers.map(laser => {
       return {
         ...laser,
         position: {
-          x: laser.position.x + laser.dir.x / 20,
-          y: laser.position.y + laser.dir.y / 20,
-          z: laser.position.z + laser.dir.z / 20,
+          x: laser.position.x + laser.dir.x / 20.0,
+          y: laser.position.y + laser.dir.y / 20.0,
+          z: laser.position.z + laser.dir.z / 20.0,
         },
       };
     });
@@ -76,14 +74,14 @@ export function checkCollisions() {
       let alienNotHit = true;
       lasers.forEach((laser, i) => {
         let inX =
-          alien.position.x - ALIEN_WIDTH / 2 < laser.position.x &&
-          alien.position.x + ALIEN_WIDTH / 2 > laser.position.x;
+          alien.position.x - ALIEN_SIZE / 2 < laser.position.x &&
+          alien.position.x + ALIEN_SIZE / 2 > laser.position.x;
         let inY =
-          alien.position.y - ALIEN_HEIGHT / 2 < laser.position.y &&
-          alien.position.y + ALIEN_HEIGHT / 2 > laser.position.y;
+          alien.position.y - ALIEN_SIZE / 2 < laser.position.y &&
+          alien.position.y + ALIEN_SIZE / 2 > laser.position.y;
         let inZ =
-          alien.position.z - ALIEN_LENGTH / 2 < laser.position.z &&
-          alien.position.z + ALIEN_LENGTH / 2 > laser.position.z;
+          alien.position.z - ALIEN_SIZE / 2 < laser.position.z &&
+          alien.position.z + ALIEN_SIZE / 2 > laser.position.z;
         if (inX && inY && inZ) {
           alienNotHit = false;
           // Remove the laser that just collided
@@ -107,24 +105,12 @@ export function addLaser() {
         let dZ = cursorPos.z - pos.z;
         let dir = { x: dX, y: dY, z: dZ };
 
-        let rotx = Math.atan2(dY, dZ);
-        let roty = Math.atan2(dX * Math.cos(rotx), dZ);
-        let rotz = Math.atan2(Math.cos(rotx), Math.sin(rotx) * Math.sin(roty));
-
-        let rot = {
-          x: rotx,
-          y: roty,
-          z: -rotz,
-        };
-
-        console.log(rot);
 
         dispatch({
           type: ADD_LASER,
           payload: {
             startPosition: pos,
             position: pos,
-            rotation: rot,
             dir: dir,
           },
         });
