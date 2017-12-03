@@ -32,9 +32,39 @@ export function initAliens(cameraPos) {
 
 computeAlienPosition = (cameraPos, x, y) => {
   return {
-    x: cameraPos.x + (x - 2) * ALIEN_SIZE * 2,
+    x: cameraPos.x + (x - 2) * ALIEN_SIZE * 5,
     y: cameraPos.y + (y - 1) * ALIEN_SIZE * 2,
     z: cameraPos.z - BOARD_DEPTH,
+  };
+};
+
+norm = v => {
+  let mag = Math.sqrt((v.x ^ 2) + (v.y ^ 2) + (v.z ^ 2));
+  return {
+    x: mag == 0 ? 0 : v.x,
+    y: mag == 0 ? 0 : v.y,
+    z: mag == 0 ? 0 : v.z,
+  };
+};
+
+computerAlienDir = (cameraPos, alienPos) => {
+  return norm({
+    x: cameraPos.x - alienPos.x,
+    y: cameraPos.y - alienPos.y,
+    z: (dZ = cameraPos.z - alienPos.z),
+  });
+};
+
+computeAlienRotation = (cameraPos, alienPos) => {
+  let dir = computerAlienDir(cameraPos, alienPos);
+
+  let roty = Math.atan2(dir.x, dir.z);
+  let rotx = Math.atan2(dir.y, dir.z);
+
+  return {
+    x: isNaN(rotx) ? 0 : -rotx,
+    y: isNaN(roty) ? 0 : roty,
+    z: 0,
   };
 };
 
@@ -43,7 +73,27 @@ export function updateCursorPos(pos) {
 }
 
 export function moveAliens(requestedByUser) {
-  return function(dispatch, getState) {};
+  return function(dispatch, getState) {
+    ARKit.getCameraPosition().then(cameraPos => {
+      newAliens = getState().objects.aliens.map(alien => {
+        let newDir = computerAlienDir(cameraPos, alien.position);
+        let newPos = {
+          x: alien.position.x + newDir.x / 500,
+          y: alien.position.y + newDir.y / 500,
+          z: alien.position.z + newDir.z / 500,
+        };
+
+        let newRot = computeAlienRotation(cameraPos, newPos);
+        return {
+          ...alien,
+          position: newPos,
+          rotation: newRot,
+          dir: newDir,
+        };
+      });
+      dispatch({ type: UPDATE_ALIENS, payload: newAliens });
+    });
+  };
 }
 
 export function moveLasers() {

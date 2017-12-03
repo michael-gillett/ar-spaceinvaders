@@ -13,6 +13,7 @@ import {
   moveLasers,
   checkCollisions,
   initAliens,
+  moveAliens,
   updateCursorPos,
 } from '../actions/object';
 
@@ -58,6 +59,7 @@ class ARScene extends Component {
 
   globalStep() {
     this.props.moveLasers();
+    this.props.moveAliens();
     this.props.checkCollisions();
   }
 
@@ -66,9 +68,9 @@ class ARScene extends Component {
     let aliens = [];
     this.props.aliens.forEach(alien => {
       aliens.push(
-        <Brick
         <Alien
           position={alien.position}
+          rotation={alien.rotation}
           shape={alien.shape}
           key={alien.x + ',' + alien.y}
           id={'alien_' + alien.x + ',' + alien.y}
@@ -105,13 +107,15 @@ class ARScene extends Component {
               node: results => results.find(r => r.id.startsWith('alien_')),
             }}
             onProjectedPosition={result => {
-              this.props.updateCursorPos(result.point);
+              if (result) {
+                this.props.updateCursorPos(result.point);
+              }
             }}
           />
           {aliens}
           {lasers}
           <ARKit.Light
-            position={{ x: 1, y: 3, z: 2 }}
+            position={{ x: -2, y: 2, z: 2 }}
             type={ARKit.LightType.Omni}
             color="white"
           />
@@ -130,6 +134,7 @@ const selectors = (state, ownProps) => ({
 const actions = dispatch => ({
   fireLaser: () => dispatch(addLaser()),
   moveLasers: () => dispatch(moveLasers()),
+  moveAliens: () => dispatch(moveAliens()),
   initAliens: (center, extent) => dispatch(initAliens(center, extent)),
   checkCollisions: () => dispatch(checkCollisions()),
   updateCursorPos: pos => dispatch(updateCursorPos(pos)),

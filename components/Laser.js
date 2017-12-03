@@ -4,8 +4,8 @@ import { ARKit } from 'react-native-arkit';
 
 const WIDTH = 0.01;
 const HEIGHT = 0.01;
-const LENGTH = 0.1;
-const SPEED = 0.1;
+const LENGTH = 0.01;
+const SPEED = 0.001;
 
 class Laser extends Component {
   constructor(props) {

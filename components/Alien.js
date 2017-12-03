@@ -11,6 +11,7 @@ class Alien extends Component {
     return (
       <ARKit.Model
         position={this.props.position}
+        eulerAngles={this.props.rotation}
         id={this.props.id}
         model={{
           file: 'art.scnassets/alien.dae', // make sure you have the model file in the ios project
