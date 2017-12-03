@@ -14,10 +14,11 @@ class Brick extends Component {
         //   file: 'art.scnassets/alien.scn', // make sure you have the model file in the ios project
         // }}
         position={this.props.position}
+        id={this.props.id}
         // scale={0.2}
         shape={this.props.shape}
         material={{
-          blendMode: ARKit.BlendMode.Screen,
+          // blendMode: ARKit.BlendMode.Screen,
           color: 'purple', //this.props.yIdx + this.props.xIdx) % 2 == 0 ? 'red' : 'blue',
         }}
       />

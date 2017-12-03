@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { ARKit } from 'react-native-arkit';
+import Dimensions from 'Dimensions';
 
 class UI extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class UI extends Component {
         <TouchableOpacity onPress={this.resetAR} style={styles.resetButton}>
           <Text> Reset </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.crosshair} />
         <TouchableOpacity
           onPress={this.props.fireLaser}
           style={styles.fireLaser}
@@ -39,18 +41,29 @@ const styles = StyleSheet.create({
   fireLaser: {
     position: 'absolute',
     bottom: 50,
-    right: 50,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'green',
+    right: 125,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'red',
+    opacity: 0.5,
+  },
+  crosshair: {
+    position: 'absolute',
+    bottom: Dimensions.get('window').width / 2 - 10,
+    left: Dimensions.get('window').height / 2 - 10,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'black',
+    opacity: 0.2,
   },
   resetButton: {
     position: 'absolute',
     top: 50,
     left: 50,
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     backgroundColor: 'white',
   },
 });
