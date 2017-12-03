@@ -31,7 +31,7 @@ const Cursor3D = withProjectedPosition()(
           radius: 0.005,
         }}
         material={{
-          color: 'red',
+          color: 'white',
         }}
       />
     );
@@ -89,7 +89,6 @@ class ARScene extends Component {
       lasers.push(
         <Laser
           position={laser.position}
-          rotation={laser.rotation}
           key={laser.startPosition.x + ',' + laser.startPosition.x}
         />,
       );

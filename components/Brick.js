@@ -9,17 +9,12 @@ class Brick extends Component {
 
   render() {
     return (
-      <ARKit.Box
-        // model={{
-        //   file: 'art.scnassets/alien.scn', // make sure you have the model file in the ios project
-        // }}
-        position={this.props.position}
+      <ARKit.Model
+        position={{ ...this.props.position, frame: 'local' }}
         id={this.props.id}
-        // scale={0.2}
-        shape={this.props.shape}
-        material={{
-          // blendMode: ARKit.BlendMode.Screen,
-          color: 'purple', //this.props.yIdx + this.props.xIdx) % 2 == 0 ? 'red' : 'blue',
+        model={{
+          file: 'art.scnassets/alien.dae', // make sure you have the model file in the ios project
+          scale: 0.03,
         }}
       />
     );
