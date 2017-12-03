@@ -5,6 +5,7 @@ import {
   UPDATE_CURSOR,
   GAME_OVER,
   PAUSE,
+  SET_ALIEN_COUNT,
 } from '../actions/object';
 
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
   isPaused: false,
   isGameOver: false,
   isInitd: false,
+  alienCount: 5,
 };
 export default function objectsReducer(state = initialState, action) {
   switch (action.type) {
@@ -26,6 +28,11 @@ export default function objectsReducer(state = initialState, action) {
       return {
         ...state,
         aliens: action.payload,
+      };
+    case SET_ALIEN_COUNT:
+      return {
+        ...state,
+        alienCount: action.payload,
       };
     case UPDATE_LASERS:
       return {

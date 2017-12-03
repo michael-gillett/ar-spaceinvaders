@@ -4,28 +4,42 @@ export const UPDATE_LASERS = 'UPDATE_LASERS';
 export const UPDATE_CURSOR = 'UPDATE_CURSOR';
 export const GAME_OVER = 'GAME_OVER';
 export const PAUSE = 'PAUSE';
+export const SET_ALIEN_COUNT = 'SET_ALIEN_COUNT';
 
 import { ARKit } from 'react-native-arkit';
 
 const BOARD_DEPTH = 3;
 const ALIEN_SIZE = 0.2;
 
-const NUM_ALIENS = 15;
-
 export function reset() {
   return function(dispatch, getState) {
     dispatch({ type: UPDATE_ALIENS, payload: [] });
     dispatch({ type: UPDATE_LASERS, payload: [] });
+    dispatch({ type: SET_ALIEN_COUNT, payload: 5 });
     dispatch(initAliens());
     dispatch({ type: GAME_OVER, payload: false });
+  };
+}
+
+export function nextRound() {
+  return function(dispatch, getState) {
+    dispatch({ type: UPDATE_ALIENS, payload: [] });
+    dispatch({ type: UPDATE_LASERS, payload: [] });
+    dispatch({
+      type: SET_ALIEN_COUNT,
+      payload: getState().objects.alienCount + 2,
+    });
+    dispatch(initAliens()).then(() => {
+      dispatch({ type: PAUSE, payload: false });
+    });
   };
 }
 
 export function initAliens() {
   return function(dispatch, getState) {
     let aliens = [];
-    ARKit.getCameraPosition().then(cameraPos => {
-      for (i = 0; i < NUM_ALIENS; i++) {
+    return ARKit.getCameraPosition().then(cameraPos => {
+      for (i = 0; i < getState().objects.alienCount; i++) {
         let alienPos = computeAlienPosition(cameraPos, i);
         let alienRot = computeAlienRotation(cameraPos, alienPos);
         let alienDir = computerAlienDir(cameraPos, alienPos);
@@ -103,9 +117,9 @@ export function moveAliens(requestedByUser) {
       newAliens = getState().objects.aliens.map(alien => {
         let newDir = computerAlienDir(cameraPos, alien.position);
         let newPos = {
-          x: alien.position.x + newDir.x / 50,
-          y: alien.position.y + newDir.y / 50,
-          z: alien.position.z + newDir.z / 50,
+          x: alien.position.x + newDir.x / 500,
+          y: alien.position.y + newDir.y / 500,
+          z: alien.position.z + newDir.z / 500,
         };
 
         let newRot = computeAlienRotation(cameraPos, newPos);
@@ -140,9 +154,9 @@ export function moveLasers() {
       return {
         ...laser,
         position: {
-          x: laser.position.x + laser.dir.x / 500.0,
-          y: laser.position.y + laser.dir.y / 500.0,
-          z: laser.position.z + laser.dir.z / 500.0,
+          x: laser.position.x + laser.dir.x / 10.0,
+          y: laser.position.y + laser.dir.y / 10.0,
+          z: laser.position.z + laser.dir.z / 10.0,
         },
       };
     });
@@ -178,6 +192,12 @@ export function checkCollisions() {
       });
       return alienNotHit;
     });
+
+    if (newAliens.length == 0) {
+      console.log('round over');
+      dispatch({ type: PAUSE, payload: true });
+    }
+
     dispatch({ type: UPDATE_ALIENS, payload: newAliens });
     dispatch({ type: UPDATE_LASERS, payload: lasers });
   };

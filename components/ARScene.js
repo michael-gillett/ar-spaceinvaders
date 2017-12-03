@@ -113,7 +113,7 @@ class ARScene extends Component {
           {aliens}
           {lasers}
           <ARKit.Light
-            position={{ x: -2, y: 2, z: 2 }}
+            position={{ x: 0, y: 0, z: 0 }}
             type={ARKit.LightType.Omni}
             color="white"
           />

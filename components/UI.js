@@ -4,24 +4,24 @@ import { ARKit } from 'react-native-arkit';
 import Dimensions from 'Dimensions';
 import { connect } from 'react-redux';
 
-import { reset } from '../actions/object';
+import { reset, nextRound } from '../actions/object';
 
 class UI extends Component {
   constructor(props) {
     super(props);
   }
 
-  resetAR() {
-    ARKit.reset();
-  }
-
   render() {
     let paused = this.props.isPaused && (
-      <TouchableOpacity onPress={this.props.reset} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>
-          {this.props.init ? 'START' : 'RESTART'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.container}>
+        <Text style={styles.screenTitle}>{'You Survived!'}</Text>
+        <TouchableOpacity
+          onPress={this.props.nextRound}
+          style={styles.centerButton}
+        >
+          <Text style={styles.centerButtonText}>{'NEXT ROUND'}</Text>
+        </TouchableOpacity>
+      </View>
     );
 
     let gameOver = (this.props.isGameOver || !this.props.isInitd) && (
@@ -38,11 +38,13 @@ class UI extends Component {
     );
 
     let inGame = !this.props.isGameOver &&
-      this.props.isInitd && (
+      this.props.isInitd &&
+      !this.props.isPaused && (
         <View style={styles.container}>
-          <TouchableOpacity onPress={this.resetAR} style={styles.resetButton}>
-            <Text> Reset </Text>
-          </TouchableOpacity>
+          <View style={styles.remaining}>
+            <Text style={styles.remainingText}>{this.props.aliensLeft}</Text>
+            <Text style={styles.remainingSubtext}>{'LEFT'}</Text>
+          </View>
           <TouchableOpacity style={styles.crosshair} />
           <TouchableOpacity
             onPress={this.props.fireLaser}
@@ -65,11 +67,12 @@ const selectors = (state, ownProps) => ({
   isGameOver: state.objects.isGameOver,
   isInitd: state.objects.isInitd,
   isPaused: state.objects.isPaused,
+  aliensLeft: state.objects.aliens.length,
 });
 
 const actions = dispatch => ({
   reset: () => dispatch(reset()),
-  moveLasers: () => dispatch(moveLasers()),
+  nextRound: () => dispatch(nextRound()),
 });
 
 export default connect(selectors, actions)(UI);
@@ -84,6 +87,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
+  screenTitle: {
+    position: 'absolute',
+    textAlign: 'center',
+    top: 40,
+    left: 0,
+    right: 0,
+    fontSize: 40,
+    color: '#4CAF50',
+    fontWeight: 'bold',
+    borderWidth: 3,
+    borderColor: '#4CAF50',
+    backgroundColor: 'white',
+    paddingVertical: 10,
+  },
   centerButton: {
     display: 'flex',
     justifyContent: 'center',
@@ -91,10 +108,33 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: Dimensions.get('window').height / 2 - 25,
     left: Dimensions.get('window').width / 2 - 50,
-    backgroundColor: '#607D8B',
+    backgroundColor: '#4CAF50',
     width: 120,
     height: 50,
     borderRadius: 10,
+  },
+  remaining: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 70,
+    height: 60,
+    borderBottomLeftRadius: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4CAF50',
+  },
+  remainingText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  remainingSubtext: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: 'white',
+    marginTop: -3,
   },
   centerButtonText: {
     fontSize: 15,
