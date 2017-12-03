@@ -2,44 +2,64 @@ export const ADD_LASER = 'ADD_LASER';
 export const UPDATE_ALIENS = 'UPDATE_ALIENS';
 export const UPDATE_LASERS = 'UPDATE_LASERS';
 export const UPDATE_CURSOR = 'UPDATE_CURSOR';
+export const GAME_OVER = 'GAME_OVER';
+export const PAUSE = 'PAUSE';
 
 import { ARKit } from 'react-native-arkit';
 
 const BOARD_DEPTH = 3;
 const ALIEN_SIZE = 0.2;
 
-export function initAliens(cameraPos) {
+const NUM_ALIENS = 15;
+
+export function reset() {
+  return function(dispatch, getState) {
+    dispatch({ type: UPDATE_ALIENS, payload: [] });
+    dispatch({ type: UPDATE_LASERS, payload: [] });
+    dispatch(initAliens());
+    dispatch({ type: GAME_OVER, payload: false });
+  };
+}
+
+export function initAliens() {
   return function(dispatch, getState) {
     let aliens = [];
-    for (x = 0; x < 5; x++) {
-      for (y = 0; y < 4; y++) {
+    ARKit.getCameraPosition().then(cameraPos => {
+      for (i = 0; i < NUM_ALIENS; i++) {
+        let alienPos = computeAlienPosition(cameraPos, i);
+        let alienRot = computeAlienRotation(cameraPos, alienPos);
+        let alienDir = computerAlienDir(cameraPos, alienPos);
+
         aliens.push({
-          position: computeAlienPosition(cameraPos, x, y),
+          position: alienPos,
+          rotation: alienRot,
+          dir: alienDir,
           shape: {
             width: ALIEN_SIZE,
             height: ALIEN_SIZE,
             length: ALIEN_SIZE,
             chamfer: 0.005,
           },
-          x: x,
-          y: y,
+          i: i,
         });
       }
-    }
-    dispatch({ type: UPDATE_ALIENS, payload: aliens });
+      dispatch({ type: UPDATE_ALIENS, payload: aliens });
+    });
   };
 }
 
-computeAlienPosition = (cameraPos, x, y) => {
+computeAlienPosition = (cameraPos, i) => {
+  let angle = 2 * Math.PI * Math.random();
+  let height = 2 * Math.random() - 1;
   return {
-    x: cameraPos.x + (x - 2) * ALIEN_SIZE * 5,
-    y: cameraPos.y + (y - 1) * ALIEN_SIZE * 2,
-    z: cameraPos.z - BOARD_DEPTH,
+    x: cameraPos.x + BOARD_DEPTH * Math.cos(angle),
+    y: cameraPos.y + height,
+    z: cameraPos.z + BOARD_DEPTH * Math.sin(angle),
   };
 };
 
 norm = v => {
-  let mag = Math.sqrt((v.x ^ 2) + (v.y ^ 2) + (v.z ^ 2));
+  let mag = Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2) + Math.pow(v.z, 2));
   return {
     x: mag == 0 ? 0 : v.x,
     y: mag == 0 ? 0 : v.y,
@@ -51,7 +71,7 @@ computerAlienDir = (cameraPos, alienPos) => {
   return norm({
     x: cameraPos.x - alienPos.x,
     y: cameraPos.y - alienPos.y,
-    z: (dZ = cameraPos.z - alienPos.z),
+    z: cameraPos.z - alienPos.z,
   });
 };
 
@@ -60,6 +80,11 @@ computeAlienRotation = (cameraPos, alienPos) => {
 
   let roty = Math.atan2(dir.x, dir.z);
   let rotx = Math.atan2(dir.y, dir.z);
+
+  if (dir.z < 0) {
+    // roty *= -1;
+    rotx *= -1;
+  }
 
   return {
     x: isNaN(rotx) ? 0 : -rotx,
@@ -78,12 +103,17 @@ export function moveAliens(requestedByUser) {
       newAliens = getState().objects.aliens.map(alien => {
         let newDir = computerAlienDir(cameraPos, alien.position);
         let newPos = {
-          x: alien.position.x + newDir.x / 500,
-          y: alien.position.y + newDir.y / 500,
-          z: alien.position.z + newDir.z / 500,
+          x: alien.position.x + newDir.x / 50,
+          y: alien.position.y + newDir.y / 50,
+          z: alien.position.z + newDir.z / 50,
         };
 
         let newRot = computeAlienRotation(cameraPos, newPos);
+
+        if (checkDistance(cameraPos, newPos)) {
+          dispatch({ type: GAME_OVER, payload: true });
+        }
+
         return {
           ...alien,
           position: newPos,
@@ -96,15 +126,23 @@ export function moveAliens(requestedByUser) {
   };
 }
 
+function checkDistance(pos1, pos2) {
+  let d =
+    Math.pow(pos1.x - pos2.x, 2) +
+    Math.pow(pos1.y - pos2.y, 2) +
+    Math.pow(pos1.z - pos2.z, 2);
+  return d < 0.2;
+}
+
 export function moveLasers() {
   return function(dispatch, getState) {
     newLasers = getState().objects.lasers.map(laser => {
       return {
         ...laser,
         position: {
-          x: laser.position.x + laser.dir.x / 20.0,
-          y: laser.position.y + laser.dir.y / 20.0,
-          z: laser.position.z + laser.dir.z / 20.0,
+          x: laser.position.x + laser.dir.x / 500.0,
+          y: laser.position.y + laser.dir.y / 500.0,
+          z: laser.position.z + laser.dir.z / 500.0,
         },
       };
     });
@@ -154,7 +192,6 @@ export function addLaser() {
         let dY = cursorPos.y - pos.y;
         let dZ = cursorPos.z - pos.z;
         let dir = { x: dX, y: dY, z: dZ };
-
 
         dispatch({
           type: ADD_LASER,

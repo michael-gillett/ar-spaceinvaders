@@ -15,6 +15,7 @@ import {
   initAliens,
   moveAliens,
   updateCursorPos,
+  checkDistance,
 } from '../actions/object';
 
 const Cursor3D = withProjectedPosition()(
@@ -48,9 +49,6 @@ class ARScene extends Component {
     this.setState({
       intervalId: intervalId,
     });
-    ARKit.getCameraPosition().then(pos => {
-      this.props.initAliens(pos);
-    });
   }
 
   componentWillUnmount() {
@@ -58,11 +56,12 @@ class ARScene extends Component {
   }
 
   globalStep() {
-    this.props.moveLasers();
-    this.props.moveAliens();
-    this.props.checkCollisions();
+    if (!this.props.shouldStop) {
+      this.props.moveLasers();
+      this.props.moveAliens();
+      this.props.checkCollisions();
+    }
   }
-
 
   render() {
     let aliens = [];
@@ -72,8 +71,8 @@ class ARScene extends Component {
           position={alien.position}
           rotation={alien.rotation}
           shape={alien.shape}
-          key={alien.x + ',' + alien.y}
-          id={'alien_' + alien.x + ',' + alien.y}
+          key={alien.i}
+          id={'alien_' + alien.i}
         />,
       );
     });
@@ -87,7 +86,6 @@ class ARScene extends Component {
         />,
       );
     });
-
 
     return (
       <View style={{ flex: 1 }}>
@@ -129,6 +127,10 @@ class ARScene extends Component {
 const selectors = (state, ownProps) => ({
   lasers: state.objects.lasers,
   aliens: state.objects.aliens,
+  shouldStop:
+    state.objects.isGameOver ||
+    !state.objects.isInitd ||
+    state.objects.isPaused,
 });
 
 const actions = dispatch => ({
@@ -137,6 +139,7 @@ const actions = dispatch => ({
   moveAliens: () => dispatch(moveAliens()),
   initAliens: (center, extent) => dispatch(initAliens(center, extent)),
   checkCollisions: () => dispatch(checkCollisions()),
+  checkDistance: () => dispatch(checkDistance()),
   updateCursorPos: pos => dispatch(updateCursorPos(pos)),
 });
 
