@@ -8,16 +8,17 @@ export const SET_ALIEN_COUNT = 'SET_ALIEN_COUNT';
 
 import { ARKit } from 'react-native-arkit';
 
-const BOARD_DEPTH = 3;
-const ALIEN_SIZE = 0.2;
+const BOARD_DEPTH = 4;
+const ALIEN_SIZE = 0.25;
 
 export function reset() {
   return function(dispatch, getState) {
     dispatch({ type: UPDATE_ALIENS, payload: [] });
     dispatch({ type: UPDATE_LASERS, payload: [] });
     dispatch({ type: SET_ALIEN_COUNT, payload: 5 });
-    dispatch(initAliens());
-    dispatch({ type: GAME_OVER, payload: false });
+    dispatch(initAliens()).then(() => {
+      dispatch({ type: GAME_OVER, payload: false });
+    });
   };
 }
 

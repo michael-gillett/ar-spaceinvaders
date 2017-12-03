@@ -14,7 +14,7 @@ class UI extends Component {
   render() {
     let paused = this.props.isPaused && (
       <View style={styles.container}>
-        <Text style={styles.screenTitle}>{'You Survived!'}</Text>
+        <Text style={styles.screenTitle}>{'YOU SURVIVED!'}</Text>
         <TouchableOpacity
           onPress={this.props.nextRound}
           style={styles.centerButton}
@@ -26,6 +26,9 @@ class UI extends Component {
 
     let gameOver = (this.props.isGameOver || !this.props.isInitd) && (
       <View style={styles.container}>
+        {this.props.isInitd && (
+          <Text style={styles.screenTitle}>{'GAME OVER!'}</Text>
+        )}
         <TouchableOpacity
           onPress={this.props.reset}
           style={styles.centerButton}
@@ -90,7 +93,8 @@ const styles = StyleSheet.create({
   screenTitle: {
     position: 'absolute',
     textAlign: 'center',
-    top: 40,
+    top: 90,
+    marginHorizontal: -3,
     left: 0,
     right: 0,
     fontSize: 40,
@@ -117,8 +121,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
-    width: 70,
-    height: 60,
+    width: 90,
+    height: 90,
+    paddingTop: 25,
     borderBottomLeftRadius: 20,
     display: 'flex',
     alignItems: 'center',
@@ -144,30 +149,24 @@ const styles = StyleSheet.create({
   },
   fireLaser: {
     position: 'absolute',
-    bottom: 50,
-    right: 125,
+    bottom: 60,
+    left: Dimensions.get('window').width / 2 - 40,
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'red',
-    opacity: 0.5,
+    backgroundColor: '#4CAF50',
+    borderWidth: 10,
+    borderColor: 'white',
+    opacity: 0.7,
   },
   crosshair: {
     position: 'absolute',
-    bottom: Dimensions.get('window').height / 2 - 10,
-    left: Dimensions.get('window').width / 2 - 10,
+    bottom: Dimensions.get('window').height / 2 + 8,
+    left: Dimensions.get('window').width / 2 - 8,
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: 'yellow',
-    opacity: 0.3,
-  },
-  resetButton: {
-    position: 'absolute',
-    top: 50,
-    left: 50,
-    width: 50,
-    height: 50,
-    backgroundColor: 'white',
+    backgroundColor: '#4CAF50',
+    opacity: 0.7,
   },
 });

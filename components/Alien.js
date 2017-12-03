@@ -15,7 +15,7 @@ class Alien extends Component {
         id={this.props.id}
         model={{
           file: 'art.scnassets/alien.dae', // make sure you have the model file in the ios project
-          scale: 0.05,
+          scale: 0.07,
         }}
       />
     );
