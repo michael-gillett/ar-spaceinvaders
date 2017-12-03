@@ -1,6 +1,7 @@
 export const ADD_LASER = 'ADD_LASER';
 export const UPDATE_ALIENS = 'UPDATE_ALIENS';
 export const UPDATE_LASERS = 'UPDATE_LASERS';
+export const UPDATE_CURSOR = 'UPDATE_CURSOR';
 
 import { ARKit } from 'react-native-arkit';
 
@@ -35,9 +36,13 @@ computeAlienPosition = (planeCenter, planeExtents, x, y) => {
   return {
     x: backLeftCorner + x * ALIEN_WIDTH,
     y: planeCenter.y + ALIEN_HEIGHT / 2 + y * ALIEN_HEIGHT,
-    z: planeCenter.z - planeExtents.z / 2 + ALIEN_LENGTH / 2,
+    z: planeCenter.z - planeExtents.z / 2 + ALIEN_LENGTH / 2 - 1,
   };
 };
+
+export function updateCursorPos(pos) {
+  return { type: UPDATE_CURSOR, payload: pos };
+}
 
 export function moveAliens(requestedByUser) {
   return function(dispatch, getState) {};
@@ -48,7 +53,11 @@ export function moveLasers(requestedByUser) {
     newLasers = getState().objects.lasers.map(laser => {
       return {
         ...laser,
-        position: { ...laser.position, z: laser.position.z - 0.1 },
+        position: {
+          x: laser.position.x + laser.dir.x / 20,
+          y: laser.position.y + laser.dir.y / 20,
+          z: laser.position.z + laser.dir.z / 20,
+        },
       };
     });
 
@@ -65,7 +74,7 @@ export function checkCollisions() {
     let lasers = getState().objects.lasers;
     let newAliens = getState().objects.aliens.filter(alien => {
       let alienNotHit = true;
-      lasers.forEach(laser => {
+      lasers.forEach((laser, i) => {
         let inX =
           alien.position.x - ALIEN_WIDTH / 2 < laser.position.x &&
           alien.position.x + ALIEN_WIDTH / 2 > laser.position.x;
@@ -77,21 +86,49 @@ export function checkCollisions() {
           alien.position.z + ALIEN_LENGTH / 2 > laser.position.z;
         if (inX && inY && inZ) {
           alienNotHit = false;
+          // Remove the laser that just collided
+          lasers.splice(i, 1);
         }
       });
       return alienNotHit;
     });
     dispatch({ type: UPDATE_ALIENS, payload: newAliens });
+    dispatch({ type: UPDATE_LASERS, payload: lasers });
   };
 }
 
 export function addLaser() {
   return function(dispatch, getState) {
     ARKit.getCameraPosition().then(pos => {
-      dispatch({
-        type: ADD_LASER,
-        payload: { startPosition: pos, position: pos },
-      });
+      let cursorPos = getState().objects.cursorPos;
+      if (cursorPos) {
+        let dX = cursorPos.x - pos.x;
+        let dY = cursorPos.y - pos.y;
+        let dZ = cursorPos.z - pos.z;
+        let dir = { x: dX, y: dY, z: dZ };
+
+        let rotx = Math.atan2(dY, dZ);
+        let roty = Math.atan2(dX * Math.cos(rotx), dZ);
+        let rotz = Math.atan2(Math.cos(rotx), Math.sin(rotx) * Math.sin(roty));
+
+        let rot = {
+          x: rotx,
+          y: roty,
+          z: -rotz,
+        };
+
+        console.log(rot);
+
+        dispatch({
+          type: ADD_LASER,
+          payload: {
+            startPosition: pos,
+            position: pos,
+            rotation: rot,
+            dir: dir,
+          },
+        });
+      }
     });
   };
 }

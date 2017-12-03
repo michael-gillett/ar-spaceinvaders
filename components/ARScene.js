@@ -14,7 +14,7 @@ import {
   moveLasers,
   checkCollisions,
   initAliens,
-  // updateCrosshair,
+  updateCursorPos,
 } from '../actions/object';
 
 const Cursor3D = withProjectedPosition()(
@@ -47,7 +47,7 @@ class ARScene extends Component {
   }
 
   componentDidMount() {
-    intervalId = setInterval(this.globalStep.bind(this), 20);
+    intervalId = setInterval(this.globalStep.bind(this), 15);
     this.setState({
       intervalId: intervalId,
     });
@@ -89,6 +89,7 @@ class ARScene extends Component {
       lasers.push(
         <Laser
           position={laser.position}
+          rotation={laser.rotation}
           key={laser.startPosition.x + ',' + laser.startPosition.x}
         />,
       );
@@ -123,6 +124,9 @@ class ARScene extends Component {
               y: Dimensions.get('window').height / 2,
               node: results => results.find(r => r.id.startsWith('alien_')),
             }}
+            onProjectedPosition={result => {
+              this.props.updateCursorPos(result.point);
+            }}
           />
           {plane}
           {aliens}
@@ -149,6 +153,7 @@ const actions = dispatch => ({
   moveLasers: () => dispatch(moveLasers()),
   initAliens: (center, extent) => dispatch(initAliens(center, extent)),
   checkCollisions: () => dispatch(checkCollisions()),
+  updateCursorPos: pos => dispatch(updateCursorPos(pos)),
 });
 
 export default connect(selectors, actions)(ARScene);

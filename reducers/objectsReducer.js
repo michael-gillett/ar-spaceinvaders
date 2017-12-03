@@ -1,8 +1,14 @@
-import { UPDATE_ALIENS, UPDATE_LASERS, ADD_LASER } from '../actions/object';
+import {
+  UPDATE_ALIENS,
+  UPDATE_LASERS,
+  ADD_LASER,
+  UPDATE_CURSOR,
+} from '../actions/object';
 
 const initialState = {
   aliens: [],
   lasers: [],
+  cursorPos: null,
   plane: null,
 };
 export default function objectsReducer(state = initialState, action) {
@@ -21,6 +27,11 @@ export default function objectsReducer(state = initialState, action) {
       return {
         ...state,
         lasers: action.payload,
+      };
+    case UPDATE_CURSOR:
+      return {
+        ...state,
+        cursorPos: action.payload,
       };
     default:
       return state;
